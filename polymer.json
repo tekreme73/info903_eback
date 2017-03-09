@@ -1,17 +1,17 @@
 {
   "entrypoint": "index.html",
-  "shell": "src/eback-app.html",
+  "shell": "src/eback-suite.html",
   "fragments": [
-    "src/routes/eback-home.html",
-    "src/routes/eback-login.html",
-    "src/routes/eback-sensors.html",
-    "src/routes/eback-settings.html",
-    "src/routes/eback-undefined.html",
+    "src/routes/route-home.html",
+    "src/routes/route-login.html",
+    "src/routes/route-sensors.html",
+    "src/routes/route-settings.html",
+    "src/routes/route-undefined.html",
 
-    "src/includes/eback-profile.html",
-    "src/includes/eback-main.html",
-    "src/includes/eback-guide.html",
-    "src/includes/eback-global-stats.html"
+    "src/fragments/fragment-profile.html",
+    "src/fragments/fragment-main.html",
+    "src/fragments/fragment-guide.html",
+    "src/fragments/fragment-global-stats.html"
   ],
   "sourceGlobs": [
     "src/**/*",

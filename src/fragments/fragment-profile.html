@@ -3,7 +3,7 @@
 
 <link rel="import" href="../shared-styles.html">
 
-<dom-module id="eback-profile">
+<dom-module id="fragment-profile">
   <template>
     <style include="shared-styles">
       .content {
@@ -26,15 +26,22 @@
       <paper-button hidden="[[!isAuth]]" class="red" on-tap="disconnectProfile">
         Déconnexion du compte
       </paper-button>
+      <paper-button hidden="[[!appStarted]]" class="deep-orange" on-tap="leaveApp">
+        Quitter l'application
+      </paper-button>
     </div>
 
   </template>
 
   <script>
     Polymer({
-      is: 'eback-profile',
+      is: 'fragment-profile',
 
       properties: {
+        appStarted: {
+          type: Boolean,
+          notify: true,
+        },
         isAuth: {
           type: Boolean,
           notify: true,
@@ -48,6 +55,7 @@
       attached: function() {
         this.disconnectSensors = this.disconnectSensors.bind(this);
         this.disconnectProfile = this.disconnectProfile.bind(this);
+        this.leaveApp = this.leaveApp.bind(this);
       },
 
       disconnectSensors: function(event) {
@@ -55,6 +63,9 @@
       },
       disconnectProfile: function() {
         this.isAuth = false;
+      },
+      leaveApp: function() {
+        this.appStarted = false;
       },
     });
   </script>

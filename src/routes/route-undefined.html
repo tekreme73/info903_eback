@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module id="eback-undefined">
+<dom-module id="route-undefined">
   <template>
     <style>
       :host {
@@ -20,16 +20,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
-    <!-- 
-      If deploying in a folder replace href="/" with the full path to your site.
-      Such as: href=="http://polymerelements.github.io/polymer-starter-kit"
-    -->
-    Oops you hit a 404. <a href="/">Head back to home.</a>
+    Oups, vous avez essayer d'accèder à une ressource qui n'existe pas. <a href="/app">Retourner sur la page d'accueil</a>
   </template>
 
   <script>
     Polymer({
-      is: 'eback-undefined',
+      is: 'route-undefined',
     });
   </script>
 </dom-module>

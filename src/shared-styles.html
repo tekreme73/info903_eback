@@ -10,6 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../bower_components/paper-styles/color.html">
+
 <!-- shared styles for all views -->
 <dom-module id="shared-styles">
   <template>
@@ -71,6 +73,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       paper-button:not([disabled]).red:hover {
         background-color: var(--paper-red-400);
+      }
+      
+      paper-button:not([disabled]).deep-orange {
+        background-color: var(--paper-deep-orange-500);
+        color: white;
+        --paper-button-raised-keyboard-focus: {
+          background-color: var(--paper-deep-orange-a200) !important;
+          color: white !important;
+        };
+      }
+      paper-button:not([disabled]).deep-orange:hover {
+        background-color: var(--paper-deep-orange-400);
       }
 
       paper-button:not([disabled]).blue {

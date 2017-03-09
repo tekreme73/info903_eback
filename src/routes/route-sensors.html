@@ -1,0 +1,93 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../components/bluetooth-device-connector/bluetooth-device-connector.html">
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="route-sensors">
+  <template>
+    <style include="shared-styles">
+      :host {
+        padding: 10px;
+      }
+      .content {
+        width: 100%;
+      }
+      .device-viewer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: stretch;
+        width: 100%;
+      }
+    </style>
+
+    <section>
+      <div class="content">
+        <div class="device-viewer">
+          <bluetooth-device-connector service="[[sensorService]]" device="{{firstSensor}}" connected="{{firstSensorConnected}}"></bluetooth-device-connector>
+          <bluetooth-device-connector service="[[sensorService]]" device="{{secondSensor}}" connected="{{secondSensorConnected}}"></bluetooth-device-connector>
+        </div>
+        <paper-button disabled="{{!_isSensorsConnected(firstSensorConnected, secondSensorConnected)}}" raised class="blue" on-tap="endSensorsConnection">
+          Terminer la connexion des capteurs
+        </paper-button>
+      </div>
+    </section>
+
+  </template>
+
+  <script>
+    var sensorsStorage = {
+      key: 'sensors',
+      value: '9876543210',
+    };
+    Polymer({
+      is: 'route-sensors',
+
+      properties: {
+        sensorService: {
+          type: String,
+          value: "",
+          readOnly: true,
+        },
+        connected: {
+          type: Boolean,
+          notify: true,
+          observer: '_connectionChanged',
+          value: function() {
+            var isSensorsAlreadyAvailable = false;
+            if( localStorage ) {
+              var sensorsKey =  localStorage.getItem(sensorsStorage.key);
+              isSensorsAlreadyAvailable = sensorsKey == sensorsStorage.value;
+            }
+            return isSensorsAlreadyAvailable;
+          },
+        },
+      },
+
+      _connectionChanged: function(isConnected) {
+        if( isConnected ) {
+          if( localStorage ) {
+            localStorage.setItem(sensorsStorage.key, sensorsStorage.value);
+          }
+        } else {
+          if( localStorage ) {
+            localStorage.removeItem(sensorsStorage.key);
+          }
+        }
+      },
+      _isSensorsConnected: function(firstSensorConnected, secondSensorConnected) {
+        return firstSensorConnected && secondSensorConnected;
+      },
+
+      attached: function() {
+        this.endSensorsConnection = this.endSensorsConnection.bind(this);
+      },
+
+      endSensorsConnection: function() {
+        this.connected = true;
+      },
+    });
+  </script>
+</dom-module>

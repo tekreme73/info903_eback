@@ -1,0 +1,82 @@
+<link rel="import" href="../bower_components/polymer/polymer.html"
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="./eback-app.html">
+<link rel="import" href="./eback-emulate-sensor.html">
+
+<link rel="import" href="./shared-styles.html">
+
+<dom-module id="eback-suite">
+  <template>
+    <style include="shared-styles">
+      :host {
+        padding: 10px;
+      }
+      .content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+      }
+    </style>
+    
+    <template is="dom-if" if="{{!_suiteStarted(appStarted, sensorEmulationStarted)}}">
+      <div class="content">
+        <paper-button class="blue" on-tap="_startApp">
+          Application
+        </paper-button>
+        <paper-button class="green" on-tap="_emulateSensor">
+          Émuler le capteur
+        </paper-button>
+      </div>
+    </template>
+    
+    <template is="dom-if" if="{{appStarted}}">
+      <eback-app started="{{appStarted}}"></eback-app>
+    </template>
+    <template is="dom-if" if="{{sensorEmulationStarted}}">
+      <eback-emulate-sensor started="{{sensorEmulationStarted}}"></eback-emulate-sensor>
+    </template>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eback-suite',
+
+      properties: {
+        appStarted: {
+          type: Boolean,
+          value: false,
+          notify: true,
+        },
+        sensorEmulationStarted: {
+          type: Boolean,
+          value: false,
+          notify: true,
+        },
+      },
+
+      //App life cycle
+      attached: function() {
+
+        //Events binding
+        this._startApp = this._startApp.bind(this);
+        this._emulateSensor = this._emulateSensor.bind(this);
+      },
+
+      //Events
+      _startApp: function(event) {
+        this.appStarted = true;
+      },
+      _emulateSensor: function(event) {
+        this.sensorEmulationStarted = true;
+      },
+
+      _suiteStarted: function(appStarted, sensorEmulationStarted) {
+        return appStarted || sensorEmulationStarted;
+      },
+    });
+  </script>
+</dom-module>

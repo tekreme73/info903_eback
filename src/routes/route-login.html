@@ -3,7 +3,7 @@
 
 <link rel="import" href="../shared-styles.html">
 
-<dom-module id="eback-login">
+<dom-module id="route-login">
   <template>
     <style include="shared-styles">
       :host {
@@ -11,10 +11,7 @@
       }
     </style>
 
-    <section onload="">
-      <h1 class="title">
-        Login
-      </h1>
+    <section>
       <div class="content">
         <!-- TODO : Faire l'authentification par un compte Google -->
         <paper-button raised class="blue" on-tap="signin">
@@ -26,61 +23,50 @@
   </template>
 
   <script>
-    var key = 'auth';
-    var value = '1234567890';
+    var authStorage = {
+      key: 'auth',
+      value: '1234567890',
+    };
     Polymer({
-      is: 'eback-login',
+      is: 'route-login',
 
       properties: {
         isAuth: {
           type: Boolean,
           notify: true,
           observer: '_authChanged',
+          value: function() {
+            var isAlreadyAuth = false;
+            if( localStorage ) {
+              var authKey =  localStorage.getItem(authStorage.key);
+              isAlreadyAuth = authKey == authStorage.value;
+            }
+            return isAlreadyAuth;
+          },
         },
-        routeTo: {
-          type: String,
-        }
       },
 
-      _authChanged: function(isAuth) {
+      _authChanged: function( isAuth ) {
         if( isAuth ) {
           if( localStorage ) {
-            localStorage.setItem(key, value);
+            localStorage.setItem(authStorage.key, authStorage.value);
           }
-          this._routeTo(this.routeTo);
         } else {
           if( localStorage ) {
-            localStorage.removeItem(key);
+            localStorage.removeItem(authStorage.key);
           }
-          this._routeTo('/login');
         }
-      },
-
-      ready: function() {
-        this.isAuth = function() {
-          var isAlreadyAuth = false;
-          if( localStorage ) {
-            var authKey =  localStorage.getItem(key);
-            isAlreadyAuth = authKey == value;
-          }
-          return isAlreadyAuth;
-        }();
       },
 
       attached: function() {
-        if( this.isAuth ) {
-          this._routeTo(this.routeTo);
-        }
         this.signin = this.signin.bind(this);
       },
 
       signin: function() {
         this.isAuth = true;
       },
-
-      _routeTo: function(to) {
-        var app = document.querySelector('eback-app');
-        app.routeTo(to);
+      signout: function() {
+        this.isAuth = false;
       },
     });
   </script>

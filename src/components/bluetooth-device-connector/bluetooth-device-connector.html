@@ -1,0 +1,104 @@
+<!--
+Copyright (c) 2017 Rémi Rebillard <tekreme73@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+-->
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="bluetooth-device-connector">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <div class="content">
+      <paper-button disabled=[[!bluetoothSupported]] raised class="[[buttonColor]]" on-tap="connectDevice">
+        [[buttonLabel]]
+      </paper-button>
+    </div>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'bluetooth-device-connector',
+
+      properties: {
+        bluetoothSupported: {
+          type: Boolean,
+          value: ('bluetooth' in navigator),
+          readOnly: true,
+        },
+        service: {
+          type: String,
+        },
+        characteristic: {
+          type: String,
+        },
+        buttonColor: {
+          type: String,
+          value: 'indigo',
+        },
+        buttonLabel: {
+          type: String,
+          value: 'Connecter un capteur',
+        },
+        device: {
+          type: Object,
+          notify: true,
+          observer: '_deviceChanged',
+        },
+        connected: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          observer: '_connectionChanged',
+        },
+      },
+
+      //COMPONENT LICECYCLE
+      ready: function() {
+        if( !this.bluetoothSupported ) {
+          this.buttonLabel = "Bluetooth not supported";
+        }
+      },
+      attached: function() {
+        
+        //EVENT BINDING
+        this.connectDevice = this.connectDevice.bind(this);
+      },
+
+      //OBSERVERS
+      _deviceChanged: function(newDevice) {
+        this.connected = !(!newDevice);
+      },
+      _connectionChanged: function() {
+      },
+
+      //EVENT
+      connectDevice: function(event) {
+
+      },
+    });
+  </script>
+</dom-module>

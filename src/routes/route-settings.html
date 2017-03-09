@@ -1,9 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 
 <link rel="import" href="../shared-styles.html">
 
-<dom-module id="eback-settings">
+<dom-module id="route-settings">
   <template>
     <style include="shared-styles">
       :host {
@@ -12,9 +13,6 @@
     </style>
 
     <section>
-      <h1 class="title">
-        Settings
-      </h1>
       <div class="content">
         <!-- TODO : Configurer le paramétrage de l'application, des notifications -->
         <paper-button raised class="blue" on-tap="validate">
@@ -23,23 +21,32 @@
       </div>
     </section>
 
+    <paper-toast id="toastsettingsapplied" duration="4000" text="Paramètres correctement sauvegardé">
+    </paper-toast>
+    <paper-toast id="toastsettingserror" duration="4000" text="Une erreur s'est produite lors de l'enregistrement des paramètres">
+    </paper-toast>
+
   </template>
 
   <script>
     Polymer({
-      is: 'eback-settings',
+      is: 'route-settings',
+
+      properties: {},
 
       attached: function() {
         this.validate = this.validate.bind(this);
       },
 
       validate: function() {
-        this._routeTo('/home');
+        this._notifySettingsApplied();
       },
 
-      _routeTo: function(to) {
-        var app = document.querySelector('eback-app');
-        app.routeTo(to);
+      _notifySettingsApplied: function() {
+        this.$.toastsettingsapplied.open();
+      },
+      _notifySettingsAppliedError: function() {
+        this.$.toastsettingserror.open();
       },
     });
   </script>

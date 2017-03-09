@@ -1,15 +1,15 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/bottom-nav/bottom-nav.html">
 
-<link rel="import" href="../includes/eback-guide.html">
-<link rel="import" href="../includes/eback-main.html">
-<link rel="import" href="../includes/eback-global-stats.html">
+<link rel="import" href="../fragments/fragment-guide.html">
+<link rel="import" href="../fragments/fragment-main.html">
+<link rel="import" href="../fragments/fragment-global-stats.html">
 
 <link rel="import" href="../components/swipe-pages/swipe-pages.html">
 
 <link rel="import" href="../shared-styles.html">
 
-<dom-module id="eback-home">
+<dom-module id="route-home">
   <template>
     <style include="shared-styles">
       :host {
@@ -22,13 +22,13 @@
 
     <swipe-pages selected="{{selected}}">
       <swipe-page class="swipe">
-        <eback-guide></eback-guide>
+        <fragment-guide></fragment-guide>
       </swipe-page>
       <swipe-page class="swipe">
-        <eback-main></eback-main>
+        <fragment-main></fragment-main>
       </swipe-page>
       <swipe-page class="swipe">
-        <eback-global-stats></eback-global-stats>
+        <fragment-global-stats></fragment-global-stats>
       </swipe-page>
     </swipe-pages>
 
@@ -43,9 +43,13 @@
 
   <script>
     Polymer({
-      is: 'eback-home',
+      is: 'route-home',
 
       properties: {
+        title: {
+          type: String,
+          notify: true,
+        },
         selected: {
           type: Number,
           notify: true,
@@ -54,11 +58,19 @@
         bottomTabSelected: {
           type: Object,
           notify: true,
+          observer: '_bottomTabChanged',
         },
       },
 
+      //OBSERVERS
       _selectedChanged: function(newValue) {
         this.$.bottomToolbar.select(newValue);
+      },
+      _bottomTabChanged: function(newValue) {
+        if( !newValue ) {
+          return;
+        }
+        this.title = newValue.label;
       },
     });
   </script>

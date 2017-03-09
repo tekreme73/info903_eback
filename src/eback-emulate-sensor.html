@@ -1,0 +1,67 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="./components/device-orientation-service/device-orientation-service.html">
+
+<link rel="import" href="./shared-styles.html">
+
+<dom-module id="eback-emulate-sensor">
+  <template>
+    <style include="shared-styles">
+      :host {
+        padding: 10px;
+      }
+      ul {
+        margin: 0 0 20px 0;
+      }
+    </style>
+
+    <ul>
+      <li>X: [[x]]</li>
+      <li>Y: [[y]]</li>
+      <li>Z: [[z]]</li>
+    </ul>
+
+    <paper-button class="deep-orange" on-tap="leaveEmulator">
+      Quitter l'émulateur
+    </paper-button>
+
+    <device-orientation-service supported="" x="{{x}}" y="{{y}}" z="{{z}}" default-data=""></device-orientation-service>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eback-emulate-sensor',
+
+      properties: {
+        started: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_onStarted',
+        },
+      },
+
+      attached: function() {
+
+        //Event bindings
+        this.leaveEmulator = this.leaveEmulator.bind(this);
+      },
+
+      //Observers
+      _onStarted: function( isStarted ) {
+        if ( isStarted ) {
+
+        } else {
+
+        }
+      },
+
+      //Events
+      leaveEmulator: function(event) {
+        this.started = false;
+      },
+    });
+  </script>
+</dom-module>

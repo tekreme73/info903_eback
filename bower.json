@@ -25,7 +25,8 @@
     "bottom-nav": "^0.2.0",
     "paper-tooltip": "^1.1.3",
     "paper-toast": "^1.3.0",
-    "paper-menu-button": "PolymerElements/paper-menu-button#^1.5.2"
+    "paper-menu-button": "PolymerElements/paper-menu-button#^1.5.2",
+    "device-orientation": "abdonrd/device-orientation#^0.2.1"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

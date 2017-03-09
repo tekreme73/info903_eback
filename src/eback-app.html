@@ -20,19 +20,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
-<link rel="import" href="../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
 
-<link rel="import" href="./routes/eback-home.html">
-<link rel="import" href="./routes/eback-login.html">
-<link rel="import" href="./routes/eback-sensors.html">
-<link rel="import" href="./routes/eback-settings.html">
-<link rel="import" href="./routes/eback-undefined.html">
+<link rel="import" href="./routes/route-home.html">
+<link rel="import" href="./routes/route-login.html">
+<link rel="import" href="./routes/route-sensors.html">
+<link rel="import" href="./routes/route-settings.html">
+<link rel="import" href="./routes/route-undefined.html">
 
-<link rel="import" href="./includes/eback-profile.html">
+<link rel="import" href="./fragments/fragment-profile.html">
 
 <link rel="import" href="./shared-styles.html">
 <link rel="import" href="./eback-icons.html">
@@ -45,6 +44,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --app-secondary-color: black;
       }
 
+      .drawer-list {
+        margin: 0 20px;
+      }
+      .drawer-list a {
+        display: block;
+        padding: 0 16px;
+        text-decoration: none;
+        color: var(--app-secondary-color);
+        line-height: 40px;
+      }
+      .drawer-list a.iron-selected {
+        color: black;
+        font-weight: bold;
+      }
+
       app-header {
         color: #fff;
         background-color: var(--app-primary-color);
@@ -53,7 +67,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --paper-icon-button-ink-color: white;
       }
       app-header [main-title] {
-        text-align: center;
+        margin: 0 0 0 1em;
+        text-align: left;
       }
       app-header paper-icon-button.warn {
         color: var(--google-yellow-500);
@@ -66,6 +81,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --paper-progress-secondary-color: var(--google-grey-100);
         --paper-progress-indeterminate-cycle-duration: 3s;
       }
+
+      iron-pages {
+        flex: 1;
+        margin-bottom: 64px;
+      }
+
       #toastsensors {
         min-width: 300px;
         width: 50%;
@@ -80,46 +101,68 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
-        pattern="/:page"
+        pattern="/app/:page"
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
     
-    <!-- Main content -->
-    <app-header-layout fullbleed has-scrolling-region>
+    <app-drawer-layout fullbleed>
 
-      <app-header class$="{{_getHeaderColor(page, bottomTabSelected.selectedClass)}}" condenses reveals effects="waterfall">
-        <app-toolbar>
-          <paper-icon-button icon="settings" on-tap="openSettings"></paper-icon-button>
-          <div main-title>[[_getHeaderTitle(page, bottomTabSelected.label)]]</div>
-          <div class="tool-sensors">
-            <paper-icon-button hidden="[[!_isUserWarnForSensors(page, isAuth, isSensorsAvailable)]]" class="warn" icon="warning" on-tap="warnSensors"></paper-icon-button>
-          </div>
-          <paper-menu-button id="profile" vertical-align="top" horizontal-align="right" no-overlap="true">
-            <paper-icon-button hidden="[[!isAuth]]" icon="face" class="dropdown-trigger"></paper-icon-button>
-            <eback-profile class="dropdown-content" is-auth="{{isAuth}}" is-sensors-available="{{isSensorsAvailable}}"></eback-profile>
-          </paper-menu-button>
-          <paper-progress hidden="[[pageLoaded]]" disabled="[[pageLoaded]]" indeterminate bottom-item></paper-progress>
-        </app-toolbar>
-      </app-header>
+      <!-- Drawer content -->
+      <app-drawer id="drawer">
+        <app-toolbar>eBack</app-toolbar>
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+          <a name="home" href="/app/home">
+            <iron-icon icon="home"></iron-icon>
+            Accueil
+          </a>
+          <a name="settings" href="/app/settings" hidden="[[!_isSettingsAccessible(page, isAuth, isSensorsAvailable)]]">
+            <iron-icon icon="settings"></iron-icon>
+            Paramètres
+          </a>
+        </iron-selector>
+      </app-drawer>
 
-      <iron-pages
-          selected="[[page]]"
-          attr-for-selected="name"
-          fallback-selection="undefined"
-          role="main">
-        <eback-login name="login" route-to="[[_routeAfterAuth(isSensorsAvailable)]]" is-auth="{{isAuth}}"></eback-login>
-        <eback-sensors name="sensors" connected="{{isSensorsAvailable}}"></eback-sensors>
-        <eback-home name="home" selected="1" bottom-tab-selected="{{bottomTabSelected}}"></eback-home>
-        <eback-settings name="settings"></eback-settings>
-        <eback-undefined name="undefined"></eback-undefined>
-      </iron-pages>
+      <!-- Main content -->
+      <app-header-layout fullbleed has-scrolling-region>
 
-    </app-header-layout>
+        <app-header class$="{{_getHeaderColor(page, bottomTabSelected.selectedClass)}}" condenses reveals effects="waterfall">
+          <app-toolbar>
+            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+            <div main-title>
+              [[_getPageSubTitle(page, pageItem.title, bottomTabSelected.label)]]
+            </div>
+            <div class="tool-sensors">
+              <paper-icon-button hidden="[[!_isUserWarnForSensors(page, isAuth, isSensorsAvailable)]]" class="warn" icon="warning" on-tap="warnSensors"></paper-icon-button>
+            </div>
+            <paper-menu-button id="profile" vertical-align="top" horizontal-align="right" no-overlap="true">
+              <paper-icon-button hidden="[[!started]]" icon="face" class="dropdown-trigger"></paper-icon-button>
+              <fragment-profile class="dropdown-content" app-started="{{started}}" is-auth="{{isAuth}}" is-sensors-available="{{isSensorsAvailable}}"></fragment-profile>
+            </paper-menu-button>
+            <paper-progress hidden="[[pageLoaded]]" disabled="[[pageLoaded]]" indeterminate bottom-item></paper-progress>
+          </app-toolbar>
+        </app-header>
+
+        
+        <iron-pages
+            selected="[[page]]"
+            selected-item="{{pageItem}}"
+            attr-for-selected="name"
+            fallback-selection="undefined"
+            role="main">
+          <route-login name="login" title="Page de connexion" is-auth="{{isAuth}}"></route-login>
+          <route-sensors name="sensors" title="Connecter les capteurs" connected="{{isSensorsAvailable}}"></route-sensors>
+          <route-home name="home" title="" selected="1" bottom-tab-selected="{{bottomTabSelected}}"></route-home>
+          <route-settings name="settings" title="Paramètres"></route-settings>
+          <route-undefined name="undefined" title="Page non trouvée"></route-undefined>
+        </iron-pages>
+
+      </app-header-layout>
+    </app-drawer-layout>
 
     <paper-toast id="toastsensors" duration="6000" text="Aucun capteur n'a été lié à l'application. Pour bénéficier de l'ensemble des fonctionalitées de l'application, connectez-les.">
       <paper-button on-tap="fixSensors" class="yellow-button">Connecter les capteurs</paper-button>
     </paper-toast>
-
+    
   </template>
 
   <script>
@@ -127,6 +170,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       is: 'eback-app',
 
       properties: {
+        started: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_onStarted',
+        },
         page: {
           type: String,
           reflectToAttribute: true,
@@ -155,75 +204,100 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         '_routePageChanged(routeData.page)',
       ],
 
-      ready: function() {
-        console.debug( this.isAuth, this.isSensorsAvailable );
-      },
+      ready: function() {},
 
       attached: function() {
-        if( !this.isAuth ) {
-          this.routeTo('/login');
-        } else if( !this.isSensorsAvailable ) {
-          this.routeTo('/settings');
-        }
+
+        //Events binding
         this.warnSensors = this.warnSensors.bind(this);
         this.fixSensors = this.fixSensors.bind(this);
-        this.openSettings = this.openSettings.bind(this);
       },
 
-      _getHeaderColor: function(page, homeColor) {
+      _getHeaderColor: function( page, homeColor ) {
         var headerColor = '';
         if( page == 'home' ) {
           headerColor = homeColor;
         }
         return headerColor;
       },
-      _getHeaderTitle: function(page, homeTitle) {
-        var headerTitle = 'eBack';
-        if( page == 'home' ) {
-          headerTitle = homeTitle;
+      _isSettingsAccessible: function( page, isAuth, isSensorsAvailable ) {
+        var isSettingsAccessible = isAuth;
+        switch (page) {
+          case 'login' :
+          case 'sensors' :
+            isSettingsAccessible = false;
+            break;
         }
-        return headerTitle;
+        return isSettingsAccessible;
       },
-      _routePageChanged: function(page) {
+      _getPageSubTitle: function( page, pageTitle, homeTitle ) {
+        var pageSubTitle = pageTitle;
+        if( page == 'home' ) {
+          pageSubTitle = homeTitle;
+        }
+        return pageSubTitle;
+      },
+      _routePageChanged: function( page ) {
         var defaultPage = 'login';
         var newPage = page;
         if( !this.isAuth ) {
           newPage = defaultPage;
         }
         this.page = newPage || defaultPage;
+
+        if (!this.$.drawer.persistent) {
+          this.$.drawer.close();
+        }
       },
-      _pageChanged: function(page) {
+      _pageChanged: function( page ) {
         if( !page ) {
           return;
         }
         this.pageLoaded = false;
         // Load page import on demand. Show 404 page if fails
-        var resolvedPageUrl = this.resolveUrl('./routes/eback-' + page + '.html');
+        var resolvedPageUrl = this.resolveUrl('./routes/route-' + page + '.html');
         this.importHref(resolvedPageUrl, null, this._showPage404, true);
         this.pageLoaded = true;
       },
       _showPage404: function() {
         this.page = 'undefined';
       },
+      _onStarted: function( isStarted ) {
+        if( isStarted ) {
+          var to = '/app/home';
+          if( !this.isAuth ) {
+            to = '/app/login';
+          } else if( !this.isSensorsAvailable ) {
+            to = '/app/sensors';
+          }
+          this.routeTo(to);
+        }
+      },
       _authChanged: function( isAuth ) {
         if( !isAuth ) {
           this.closeProfile();
+          this.routeTo('/app/login');
+        } else {
+          var to = this._routeAfterAuth(this.isSensorsAvailable);
+          this.routeTo(to);
         }
       },
       _sensorsChanged: function( isSensorsAvailable ) {
         if( !isSensorsAvailable ) {
           this.closeProfile();
+        } else {
+          this.routeTo('/app/home');
         }
       },
 
-      _routeAfterAuth: function(isSensorsAvailable) {
-        var route = "/sensors";
+      _routeAfterAuth: function( isSensorsAvailable ) {
+        var route = "/app/sensors";
         if( isSensorsAvailable ) {
-          route = "/home";
+          route = "/app/home";
         }
         return route;
       },
-      _isUserWarnForSensors: function(page, isAuth, isSensorsAvailable) {
+      _isUserWarnForSensors: function( page, isAuth, isSensorsAvailable ) {
         var warnUserForSensors = isAuth && !isSensorsAvailable;
         if( page == 'sensors' ) {
           warnUserForSensors = false;
@@ -231,15 +305,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return warnUserForSensors;
       },
 
-      openSettings: function() {
-        return this.routeTo('/settings');
-      },
       warnSensors: function() {
         this.$.toastsensors.open();
       },
       fixSensors: function() {
         this.$.toastsensors.close();
-        return this.routeTo('/sensors');
+        return this.routeTo('/app/sensors');
       },
 
       closeProfile: function() {
