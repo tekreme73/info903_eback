@@ -2,13 +2,6 @@
   "entrypoint": "index.html",
   "shell": "src/eback-app.html",
   "fragments": [
-    "src/eback-app.html",
-    "src/eback-icons.html",
-    "src/eback-styles.html",
-
-    "src/comonents/swipe-pages/swipe-pages.html",
-    "src/comonents/swipe-pages/swipe-page.html",
-
     "src/routes/eback-home.html",
     "src/routes/eback-login.html",
     "src/routes/eback-sensors.html",
