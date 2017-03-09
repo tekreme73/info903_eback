@@ -1,0 +1,45 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="eback-settings">
+  <template>
+    <style include="shared-styles">
+      :host {
+        padding: 10px;
+      }
+    </style>
+
+    <section>
+      <h1 class="title">
+        Settings
+      </h1>
+      <div class="content">
+        <paper-button raised class="blue" on-tap="validate">
+          Valider les changements
+        </paper-button>
+      </div>
+    </section>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eback-settings',
+
+      attached: function() {
+        this.validate = this.validate.bind(this);
+      },
+
+      validate: function() {
+        this._routeTo('/home');
+      },
+
+      _routeTo: function(to) {
+        var app = document.querySelector('eback-app');
+        app.routeTo(to);
+      },
+    });
+  </script>
+</dom-module>

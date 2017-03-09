@@ -1,0 +1,65 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/bottom-nav/bottom-nav.html">
+
+<link rel="import" href="../includes/eback-guide.html">
+<link rel="import" href="../includes/eback-main.html">
+<link rel="import" href="../includes/eback-global-stats.html">
+
+<link rel="import" href="../components/swipe-pages/swipe-pages.html">
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="eback-home">
+  <template>
+    <style include="shared-styles">
+      :host {
+        padding: 10px;
+      }
+      bottom-nav:not([style-scope]):not(.style-scope) {
+        color: #fff;
+      }
+    </style>
+
+    <swipe-pages selected="{{selected}}">
+      <swipe-page>
+        <eback-guide></eback-guide>
+      </swipe-page>
+      <swipe-page>
+        <eback-main></eback-main>
+      </swipe-page>
+      <swipe-page>
+        <eback-global-stats></eback-global-stats>
+      </swipe-page>
+    </swipe-pages>
+
+    <bottom-nav fixed>
+      <bottom-toolbar id="bottomToolbar" class$="[[bottomTabSelected.selectedClass]]" selected-item="{{bottomTabSelected}}" selected="{{selected}}">
+        <bottom-tab show-label selected-class="bg-green" label="Guide" icon="book"></bottom-tab>
+        <bottom-tab show-label selected-class="bg-gblue" label="Accueil" icon="home"></bottom-tab>
+        <bottom-tab show-label selected-class="bg-deep-purple" label="Mon historique" icon="assessment"></bottom-tab>
+      </bottom-toolbar>
+    </bottom-nav>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eback-home',
+
+      properties: {
+        selected: {
+          type: Number,
+          notify: true,
+          observer: '_selectedChanged',
+        },
+        bottomTabSelected: {
+          type: Object,
+          notify: true,
+        },
+      },
+
+      _selectedChanged: function(newValue) {
+        this.$.bottomToolbar.select(newValue);
+      },
+    });
+  </script>
+</dom-module>

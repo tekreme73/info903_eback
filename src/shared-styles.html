@@ -1,0 +1,171 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<!-- shared styles for all views -->
+<dom-module id="shared-styles">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      h1 {
+        margin: 16px 0;
+        font-size: 22px;
+      }
+      h2 {
+        margin: 14px 0;
+        font-size: 18px;
+      }
+      h3 {
+        margin: 12px 0;
+        font-size: 16px;
+      }
+
+      [hidden], .hidden {
+        display: none;
+      }
+      
+      .swipe {
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+        cursor: default;
+      }
+
+      paper-button {
+        font-family: 'Roboto', 'Noto', sans-serif;
+        font-weight: normal;
+        font-size: 14px;
+        -webkit-font-smoothing: antialiased;
+      }
+      
+      paper-button:not([disabled]).indigo {
+        background-color: var(--paper-indigo-500);
+        color: white;
+        --paper-button-raised-keyboard-focus: {
+          background-color: var(--paper-indigo-a200) !important;
+          color: white !important;
+        };
+      }
+      paper-button:not([disabled]).indigo:hover {
+        background-color: var(--paper-indigo-400);
+      }
+      
+      paper-button:not([disabled]).red {
+        background-color: var(--paper-red-500);
+        color: white;
+        --paper-button-raised-keyboard-focus: {
+          background-color: var(--paper-red-a200) !important;
+          color: white !important;
+        };
+      }
+      paper-button:not([disabled]).red:hover {
+        background-color: var(--paper-red-400);
+      }
+
+      paper-button:not([disabled]).blue {
+        background-color: var(--paper-blue-500);
+        color: white;
+        --paper-button-raised-keyboard-focus: {
+          background-color: var(--paper-blue-a200) !important;
+          color: white !important;
+        };
+      }
+      paper-button:not([disabled]).blue:hover {
+        background-color: var(--paper-blue-400);
+      }
+
+      paper-button:not([disabled]).green {
+        background-color: var(--paper-green-500);
+        color: white;
+        --paper-button-raised-keyboard-focus: {
+          background-color: var(--paper-green-a200) !important;
+          color: white !important;
+        };
+      }
+      paper-button:not([disabled]).green:hover {
+        background-color: var(--paper-green-400);
+      }
+      
+      .bg-gred:not([style-scope]):not(.style-scope) {
+        background-color: var(--google-red-700);
+      }
+      .bg-gblue:not([style-scope]):not(.style-scope) {
+        background-color: var(--google-blue-700);
+      }
+      .bg-ggreen:not([style-scope]):not(.style-scope) {
+        background-color: var(--google-green-700);
+      }
+      .bg-gyellow:not([style-scope]):not(.style-scope) {
+        background-color: var(--google-yellow-700);
+      }
+      .bg-red:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-red-700);
+      }
+      .bg-pink:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-pink-700);
+      }
+      .bg-purple:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-purple-700);
+      }
+      .bg-deep-purple:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-deep-purple-700);
+      }
+      .bg-indigo:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-indigo-700);
+      }
+      .bg-blue:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-blue-700);
+      }
+      .bg-light-blue:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-light-blue-700);
+      }
+      .bg-cyan:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-cyan-700);
+      }
+      .bg-teal:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-teal-700);
+      }
+      .bg-green:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-green-700);
+      }
+      .bg-light-green:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-light-green-700);
+      }
+      .bg-lime:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-lime-700);
+      }
+      .bg-yellow:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-yellow-700);
+      }
+      .bg-amber:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-amber-700);
+      }
+      .bg-orange:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-orange-700);
+      }
+      .bg-deep-orange:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-deep-orange-700);
+      }
+      .bg-brown:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-brown-700);
+      }
+      .bg-grey:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-grey-700);
+      }
+      .bg-blue-grey:not([style-scope]):not(.style-scope) {
+        background-color: var(--paper-blue-grey-700);
+      }
+    </style>
+  </template>
+</dom-module>

@@ -1,0 +1,61 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="eback-profile">
+  <template>
+    <style include="shared-styles">
+      .content {
+        display: flex;
+        flex-direction: column;
+        padding: 5px;
+        width: calc(100% - 10px);
+      }
+      .content paper-button {
+        font-size: 12px;
+        margin: 5px;
+        padding: 15px 5px;
+      }
+    </style>
+    
+    <div class="content">
+      <paper-button hidden="[[!isSensorsAvailable]]" class="blue" on-tap="disconnectSensors">
+        Déconnecter les capteurs
+      </paper-button>
+      <paper-button hidden="[[!isAuth]]" class="red" on-tap="disconnectProfile">
+        Déconnexion du compte
+      </paper-button>
+    </div>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eback-profile',
+
+      properties: {
+        isAuth: {
+          type: Boolean,
+          notify: true,
+        },
+        isSensorsAvailable: {
+          type: Boolean,
+          notify: true,
+        },
+      },
+
+      attached: function() {
+        this.disconnectSensors = this.disconnectSensors.bind(this);
+        this.disconnectProfile = this.disconnectProfile.bind(this);
+      },
+
+      disconnectSensors: function(event) {
+        this.isSensorsAvailable = false;
+      },
+      disconnectProfile: function() {
+        this.isAuth = false;
+      },
+    });
+  </script>
+</dom-module>

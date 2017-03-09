@@ -1,0 +1,256 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+
+
+<link rel="import" href="./routes/eback-home.html">
+<link rel="import" href="./routes/eback-login.html">
+<link rel="import" href="./routes/eback-sensors.html">
+<link rel="import" href="./routes/eback-settings.html">
+<link rel="import" href="./routes/eback-undefined.html">
+
+<link rel="import" href="./includes/eback-profile.html">
+
+<link rel="import" href="./shared-styles.html">
+<link rel="import" href="./eback-icons.html">
+
+<dom-module id="eback-app">
+  <template>
+    <style include="shared-styles">
+      :host {
+        --app-primary-color: var(--google-blue-700);
+        --app-secondary-color: black;
+      }
+
+      app-header {
+        color: #fff;
+        background-color: var(--app-primary-color);
+      }
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+      app-header [main-title] {
+        text-align: center;
+      }
+      app-header paper-icon-button.warn {
+        color: var(--google-yellow-500);
+      }
+      app-header paper-progress {
+        display: block;
+        width: 100%;
+        --paper-progress-container-color: var(--app-primary-color);
+        --paper-progress-active-color: var(--google-grey-100);
+        --paper-progress-secondary-color: var(--google-grey-100);
+        --paper-progress-indeterminate-cycle-duration: 3s;
+      }
+      #toastsensors {
+        min-width: 300px;
+        width: 50%;
+      }
+      .yellow-button {
+        text-transform: none;
+        color: #eeff41;
+        padding: 2px;
+      }
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="/:page"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+    
+    <!-- Main content -->
+    <app-header-layout fullbleed has-scrolling-region>
+
+      <app-header class$="{{_getHeaderColor(page, bottomTabSelected.selectedClass)}}" condenses reveals effects="waterfall">
+        <app-toolbar>
+          <paper-icon-button icon="settings" on-tap="openSettings"></paper-icon-button>
+          <div main-title>[[_getHeaderTitle(page, bottomTabSelected.label)]]</div>
+          <div class="tool-sensors">
+            <paper-icon-button hidden="[[!_isUserWarnForSensors(page, isAuth, isSensorsAvailable)]]" class="warn" icon="warning" on-tap="warnSensors"></paper-icon-button>
+          </div>
+          <paper-menu-button id="profile" vertical-align="top" horizontal-align="right" no-overlap="true">
+            <paper-icon-button hidden="[[!isAuth]]" icon="face" class="dropdown-trigger"></paper-icon-button>
+            <eback-profile class="dropdown-content" is-auth="{{isAuth}}" is-sensors-available="{{isSensorsAvailable}}"></eback-profile>
+          </paper-menu-button>
+          <paper-progress hidden="[[pageLoaded]]" disabled="[[pageLoaded]]" indeterminate bottom-item></paper-progress>
+        </app-toolbar>
+      </app-header>
+
+      <iron-pages
+          selected="[[page]]"
+          attr-for-selected="name"
+          fallback-selection="undefined"
+          role="main">
+        <eback-login name="login" route-to="[[_routeAfterAuth(isSensorsAvailable)]]" is-auth="{{isAuth}}"></eback-login>
+        <eback-sensors name="sensors" connected="{{isSensorsAvailable}}"></eback-sensors>
+        <eback-home name="home" selected="1" bottom-tab-selected="{{bottomTabSelected}}"></eback-home>
+        <eback-settings name="settings"></eback-settings>
+        <eback-undefined name="undefined"></eback-undefined>
+      </iron-pages>
+
+    </app-header-layout>
+
+    <paper-toast id="toastsensors" duration="6000" text="Aucun capteur n'a été lié à l'application. Pour bénéficier de l'ensemble des fonctionalitées de l'application, connectez-les.">
+      <paper-button on-tap="fixSensors" class="yellow-button">Connecter les capteurs</paper-button>
+    </paper-toast>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eback-app',
+
+      properties: {
+        page: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_pageChanged',
+        },
+        pageLoaded: {
+          type: Boolean,
+          value: false,
+          notify: true,
+        },
+        isAuth: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_authChanged',
+        },
+        isSensorsAvailable: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_sensorsChanged',
+        },
+      },
+
+      observers: [
+        '_routePageChanged(routeData.page)',
+      ],
+
+      ready: function() {
+        console.debug( this.isAuth, this.isSensorsAvailable );
+      },
+
+      attached: function() {
+        if( !this.isAuth ) {
+          this.routeTo('/login');
+        } else if( !this.isSensorsAvailable ) {
+          this.routeTo('/settings');
+        }
+        this.warnSensors = this.warnSensors.bind(this);
+        this.fixSensors = this.fixSensors.bind(this);
+        this.openSettings = this.openSettings.bind(this);
+      },
+
+      _getHeaderColor: function(page, homeColor) {
+        var headerColor = '';
+        if( page == 'home' ) {
+          headerColor = homeColor;
+        }
+        return headerColor;
+      },
+      _getHeaderTitle: function(page, homeTitle) {
+        var headerTitle = 'eBack';
+        if( page == 'home' ) {
+          headerTitle = homeTitle;
+        }
+        return headerTitle;
+      },
+      _routePageChanged: function(page) {
+        var defaultPage = 'login';
+        var newPage = page;
+        if( !this.isAuth ) {
+          newPage = defaultPage;
+        } else if( !this.isSensorsAvailable ) {
+          newPage = 'sensors';
+        }
+        this.page = newPage || defaultPage;
+      },
+      _pageChanged: function(page) {
+        if( !page ) {
+          return;
+        }
+        this.pageLoaded = false;
+        // Load page import on demand. Show 404 page if fails
+        var resolvedPageUrl = this.resolveUrl('./routes/eback-' + page + '.html');
+        this.importHref(resolvedPageUrl, null, this._showPage404, true);
+        this.pageLoaded = true;
+      },
+      _showPage404: function() {
+        this.page = 'undefined';
+      },
+      _authChanged: function( isAuth ) {
+        if( !isAuth ) {
+          this.closeProfile();
+        }
+      },
+      _sensorsChanged: function( isSensorsAvailable ) {
+        if( !isSensorsAvailable ) {
+          this.closeProfile();
+        }
+      },
+
+      _routeAfterAuth: function(isSensorsAvailable) {
+        var route = "/sensors";
+        if( isSensorsAvailable ) {
+          route = "/home";
+        }
+        return route;
+      },
+      _isUserWarnForSensors: function(page, isAuth, isSensorsAvailable) {
+        var warnUserForSensors = isAuth && !isSensorsAvailable;
+        if( page == 'sensors' ) {
+          warnUserForSensors = false;
+        }
+        return warnUserForSensors;
+      },
+
+      openSettings: function() {
+        return this.routeTo('/settings');
+      },
+      warnSensors: function() {
+        this.$.toastsensors.open();
+      },
+      fixSensors: function() {
+        this.$.toastsensors.close();
+        return this.routeTo('/sensors');
+      },
+
+      closeProfile: function() {
+        this.$.profile.close();
+      },
+      routeTo: function(to) {
+        this.set('route.path', '');
+        return this.set('route.path', to);
+      },
+    });
+  </script>
+</dom-module>

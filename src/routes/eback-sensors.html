@@ -1,0 +1,82 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="eback-sensors">
+  <template>
+    <style include="shared-styles">
+      :host {
+        padding: 10px;
+      }
+    </style>
+
+    <section>
+      <h1 class="title">
+        Sensors
+      </h1>
+      <div class="content">
+        <paper-button raised class="blue" on-tap="connectSensors">
+          Connecter les capteurs
+        </paper-button>
+      </div>
+    </section>
+
+  </template>
+
+  <script>
+    var key = 'sensors';
+    var value = '9876543210';
+    Polymer({
+      is: 'eback-sensors',
+
+      properties: {
+        connected: {
+          type: Boolean,
+          notify: true,
+          observer: '_connectionChanged',
+        },
+      },
+
+      _connectionChanged: function(isConnected) {
+        if( isConnected ) {
+          if( localStorage ) {
+            localStorage.setItem(key, value);
+          }
+        } else {
+          if( localStorage ) {
+            localStorage.removeItem(key);
+          }
+        }
+      },
+
+      ready: function() {
+        this.connected = function() {
+          var isSensorsAlreadyAvailable = false;
+          if( localStorage ) {
+            var sensorsKey =  localStorage.getItem(key);
+            isSensorsAlreadyAvailable = sensorsKey == value;
+          }
+          return isSensorsAlreadyAvailable;
+        }();
+      },
+
+      attached: function() {
+        if( this.connected ) {
+          this._routeTo('/home');
+        }
+        this.connectSensors = this.connectSensors.bind(this);
+      },
+
+      connectSensors: function() {
+        this.connected = true;
+        this._routeTo('/home');
+      },
+
+      _routeTo: function(to) {
+        var app = document.querySelector('eback-app');
+        app.routeTo(to);
+      },
+    });
+  </script>
+</dom-module>

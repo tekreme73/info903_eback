@@ -1,0 +1,86 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="eback-login">
+  <template>
+    <style include="shared-styles">
+      :host {
+        padding: 10px;
+      }
+    </style>
+
+    <section onload="">
+      <h1 class="title">
+        Login
+      </h1>
+      <div class="content">
+        <paper-button raised class="blue" on-tap="signin">
+          Connexion
+        </paper-button>
+      </div>
+    </section>
+
+  </template>
+
+  <script>
+    var key = 'auth';
+    var value = '1234567890';
+    Polymer({
+      is: 'eback-login',
+
+      properties: {
+        isAuth: {
+          type: Boolean,
+          notify: true,
+          observer: '_authChanged',
+        },
+        routeTo: {
+          type: String,
+        }
+      },
+
+      _authChanged: function(isAuth) {
+        if( isAuth ) {
+          if( localStorage ) {
+            localStorage.setItem(key, value);
+          }
+          this._routeTo(this.routeTo);
+        } else {
+          if( localStorage ) {
+            localStorage.removeItem(key);
+          }
+          this._routeTo('/login');
+        }
+      },
+
+      ready: function() {
+        this.isAuth = function() {
+          var isAlreadyAuth = false;
+          if( localStorage ) {
+            var authKey =  localStorage.getItem(key);
+            isAlreadyAuth = authKey == value;
+          }
+          return isAlreadyAuth;
+        }();
+      },
+
+      attached: function() {
+        if( this.isAuth ) {
+          this._routeTo(this.routeTo);
+        }
+        this.signin = this.signin.bind(this);
+      },
+
+      signin: function() {
+        this.isAuth = true;
+      },
+
+      _routeTo: function(to) {
+        var app = document.querySelector('eback-app');
+        app.routeTo(to);
+      },
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,32 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/eback-app.html",
+  "fragments": [
+    "src/eback-app.html",
+    "src/eback-icons.html",
+    "src/eback-styles.html",
+
+    "src/comonents/swipe-pages/swipe-pages.html",
+    "src/comonents/swipe-pages/swipe-page.html",
+
+    "src/routes/eback-home.html",
+    "src/routes/eback-login.html",
+    "src/routes/eback-sensors.html",
+    "src/routes/eback-settings.html",
+    "src/routes/eback-undefined.html",
+
+    "src/includes/eback-profile.html",
+    "src/includes/eback-main.html",
+    "src/includes/eback-guide.html",
+    "src/includes/eback-global-stats.html",
+  ],
+  "sourceGlobs": [
+    "src/**/*",
+    "images/**/*",
+    "bower.json"
+  ],
+  "includeDependencies": [
+    "manifest.json",
+    "bower_components/webcomponentsjs/webcomponents-lite.min.js"
+  ]
+}
