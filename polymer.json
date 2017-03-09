@@ -18,7 +18,7 @@
     "src/includes/eback-profile.html",
     "src/includes/eback-main.html",
     "src/includes/eback-guide.html",
-    "src/includes/eback-global-stats.html",
+    "src/includes/eback-global-stats.html"
   ],
   "sourceGlobs": [
     "src/**/*",
