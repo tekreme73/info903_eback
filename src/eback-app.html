@@ -189,8 +189,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var newPage = page;
         if( !this.isAuth ) {
           newPage = defaultPage;
-        } else if( !this.isSensorsAvailable ) {
-          newPage = 'sensors';
         }
         this.page = newPage || defaultPage;
       },
