@@ -22,82 +22,257 @@ THE SOFTWARE.
 -->
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="./platinum-bluetooth-device.html">
+<link rel="import" href="../../../bower_components/platinum-bluetooth/platinum-bluetooth-service.html">
+<link rel="import" href="../../../bower_components/platinum-bluetooth/platinum-bluetooth-characteristic.html">
+
+<link rel="import" href="../../shared-styles.html">
 
 <dom-module id="bluetooth-device-connector">
   <template>
-    <style>
+    <style include="shared-styles">
       :host {
         display: block;
       }
+      paper-card {
+        --paper-card-background-color: #607d8b;
+        --paper-card-header-color: yellow;
+        color: white;
+      }
+      .card-actions .horizontal {
+        display: flex;
+        flex-direction: row;
+      }
+      .card-actions .justified {
+        justify-content: space-around;
+      }
+      .card-actions .horizontal > * {
+        flex: 1;
+      }
+      paper-button {
+        font-size: x-small;
+      }
     </style>
 
-    <div class="content">
-      <paper-button disabled=[[!bluetoothSupported]] raised class="[[buttonColor]]" on-tap="connectDevice">
-        [[buttonLabel]]
-      </paper-button>
-    </div>
+    <paper-card>
+      <div class="card-content">
+        <div class="device" hidden="[[!isPaired]]">
+          <div class="device-name">[[device.name]]</div>
+          <p>Id: <span class="device-id">[[device.id]]</span></p>
+        </div>
+        <div class="log">
+          [[_log]]
+        </div>
+      </div>
+      <div class="card-actions">
+        <div class="horizontal justified">
+          <paper-button hidden="[[isPaired]]" on-tap="_linkSensor">
+            Appairer un capteur
+          </paper-button>
+          <paper-button hidden="[[!isPaired]]" on-tap="_unlinkSensor">
+            Désappairer le capteur
+          </paper-button>
+          <paper-button hidden="[[isConnected]]" disabled="[[!isPaired]]" on-tap="_connectServices">
+            Connecter les services
+          </paper-button>
+          <paper-button hidden="[[!isConnected]]" disabled="[[!isPaired]]" on-tap="_disconnectServices">
+            Déconnecter les services
+          </paper-button>
+          <paper-button hidden="[[isNotified]]" disabled="[[!isConnected]]" on-tap="_startNotifications">
+            Démarrer les notifications
+          </paper-button>
+          <paper-button hidden="[[!isNotified]]" disabled="[[!isConnected]]" on-tap="_stopNotifications">
+            Arrêter les notifications
+          </paper-button>
+        </div>
+      </div>
+    </paper-card>
+
+    <platinum-bluetooth-device id="device" supported="{{bluetoothSupported}}" device="{{device}}" accept-all-devices optional-services-filter='[[_getServiceFilter(serviceName)]]'>
+      <platinum-bluetooth-service service='[[serviceName]]'>
+        <platinum-bluetooth-characteristic id="characteristic" characteristic='[[characteristicName]]' on-value-changed='onCharacteristicValueChanged'>
+        </platinum-bluetooth-characteristic>
+      </platinum-bluetooth-service>
+    </platinum-bluetooth-device>
 
   </template>
 
   <script>
+    function onCharacteristicValueChanged(event) {
+      var cmp = document.querySelector('bluetooth-device-connector');
+      var value = event.target.value;
+      value = value.buffer ? value : new DataView(value);
+      cmp._log = value.getUint8(0);
+      //cmp.characteristicValueChanged( value );
+    };
+
     Polymer({
       is: 'bluetooth-device-connector',
 
       properties: {
         bluetoothSupported: {
           type: Boolean,
-          value: ('bluetooth' in navigator),
-          readOnly: true,
+          notify: true,
         },
-        service: {
+        serviceName: {
           type: String,
+          reflectToAttribute: true,
+          value: '',
         },
-        characteristic: {
+        characteristicName: {
           type: String,
+          reflectToAttribute: true,
+          value: '',
         },
-        buttonColor: {
-          type: String,
-          value: 'indigo',
-        },
-        buttonLabel: {
-          type: String,
-          value: 'Connecter un capteur',
+        characteristicValueChanged: {
+          type: Function,
+          value: function() {
+            return function(value){};
+          }
         },
         device: {
           type: Object,
           notify: true,
-          observer: '_deviceChanged',
+          reflectToAttribute: true,
+          observer: '_pickedDeviceChanged',
         },
-        connected: {
+        characteristic: {
+          type: Object,
+          notify: true,
+        },
+        isPaired: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          observer: '_pairingChanged',
+        },
+        isConnected: {
           type: Boolean,
           value: false,
           notify: true,
           observer: '_connectionChanged',
         },
+        isNotified: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          observer: '_notificationChanged',
+        },
+        _log: {
+          type: String,
+          value: '',
+          observer: '_logChanged',
+        }
       },
 
       //COMPONENT LICECYCLE
-      ready: function() {
-        if( !this.bluetoothSupported ) {
-          this.buttonLabel = "Bluetooth not supported";
-        }
-      },
+      ready: function() {},
       attached: function() {
-        
+        this.characteristic = this.$.characteristic;
+
         //EVENT BINDING
-        this.connectDevice = this.connectDevice.bind(this);
+        this._linkSensor = this._linkSensor.bind(this);
+        this._unlinkSensor = this._unlinkSensor.bind(this);
+        this._connectServices = this._connectServices.bind(this);
+        this._disconnectServices = this._disconnectServices.bind(this);
+        this._startNotifications = this._startNotifications.bind(this);
+        this._stopNotifications = this._stopNotifications.bind(this);
+        this._handleError = this._handleError.bind(this);
+        this._onCharacteristicValueChanged = this._onCharacteristicValueChanged.bind(this);
       },
 
       //OBSERVERS
-      _deviceChanged: function(newDevice) {
-        this.connected = !(!newDevice);
+      _pickedDeviceChanged: function(pickedDevice) {
+        this.isPaired = !(!pickedDevice);
       },
-      _connectionChanged: function() {
+      _pairingChanged: function(isPaired) {
+        if( isPaired ) {
+          this._log = 'Paired Bluetooth Device!';
+        } else {
+          this._disconnectServices();
+          this._log = 'Unpaired Bluetooth Device!';
+        }
+      },
+      _connectionChanged: function(isConnected) {
+        if( isConnected ) {
+          this._log = 'Connected To Services!';
+        } else {
+          this._stopNotifications();
+          this._log = 'Disconnected To Services!';
+        }
+      },
+      _notificationChanged: function(isNotified) {
+        if( isNotified ) {
+          this._log = 'Started Notifications To Characteristic!';
+        } else {
+          this._log = 'Stopped Notifications To Characteristic!';
+        }
+      },
+      _logChanged: function(newLog) {
+        if( !newLog ){
+          return;
+        }
+        console.log(newLog);
       },
 
       //EVENT
-      connectDevice: function(event) {
+      _linkSensor: function(event) {
+        this._log = 'Requesting Bluetooth Device...';
 
+        this.$.device.request()
+        //Implicit call to pick a bluetooth device
+        .catch(this._handleError);
+      },
+      _unlinkSensor: function(event) {
+        this._log = 'Forgotting Bluetooth Device...';
+        this.$.device.reset();
+        //Implicit call to delete picked bluetooth device
+      },
+      _connectServices: function(event) {
+        var self = this;
+        this._log = 'Requesting Device Services...';
+        this.$.device.request()
+        .then(function() {
+          self.isConnected = true;
+        })
+        .catch(this._handleError);
+      },
+      _disconnectServices: function(event) {
+        this._log = 'Disconnecting Device Services...';
+        this.$.device.disconnect();
+        this.isConnected = false;
+      },
+      _startNotifications: function(event) {
+        var self = this;
+        this._log = 'Starting Device Notifications...';
+        this.$.characteristic.startNotifications()
+        .then(function(){
+          self.isNotified = true;
+        })
+        .catch(this._handleError);
+      },
+      _stopNotifications: function(event) {
+        var self = this;
+        this._log = 'Stopping Device Notifications...';
+        this.$.characteristic.stopNotifications()
+        .then(function(){
+          self.isNotified = false;
+        })
+        .catch(this._handleError);
+      },
+
+      //CUSTOM
+      _handleError: function(error) {
+        console.error(error);
+        this._log = error;
+      },
+      _resetLog: function() {
+        this._log = '';
+      },
+      _getServiceFilter: function(serviceName) {
+        return [ serviceName ];
       },
     });
   </script>

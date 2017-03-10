@@ -9,31 +9,53 @@
   <template>
     <style include="shared-styles">
       :host {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
         padding: 10px;
       }
       .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
         width: 100%;
       }
-      .device-viewer {
+      .content + .bottom-content {
         display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: stretch;
+        flex-direction: column;
+        justify-content: center;
         width: 100%;
       }
     </style>
 
-    <section>
-      <div class="content">
-        <div class="device-viewer">
-          <bluetooth-device-connector service="[[sensorService]]" device="{{firstSensor}}" connected="{{firstSensorConnected}}"></bluetooth-device-connector>
-          <bluetooth-device-connector service="[[sensorService]]" device="{{secondSensor}}" connected="{{secondSensorConnected}}"></bluetooth-device-connector>
-        </div>
-        <paper-button disabled="{{!_isSensorsConnected(firstSensorConnected, secondSensorConnected)}}" raised class="blue" on-tap="endSensorsConnection">
-          Terminer la connexion des capteurs
-        </paper-button>
-      </div>
-    </section>
+    <div class="content">
+      <bluetooth-device-connector
+        service-name="[[sensorService]]"
+        characteristic-name="[[sensorCharacteristic]]"
+        characteristic-value-changed="{{_batteryValueChanged}}"
+        device="{{firstSensor}}"
+        is-connected="{{firstSensorConnected}}">
+      </bluetooth-device-connector>
+      <bluetooth-device-connector
+        service-name="[[sensorService]]"
+        characteristic-name="[[sensorCharacteristic]]"
+        characteristic-value-changed="{{_batteryValueChanged}}"
+        device="{{secondSensor}}"
+        is-connected="{{secondSensorConnected}}">
+      </bluetooth-device-connector>
+    </div>
+
+    <div class="bottom-content">
+      <paper-button disabled="{{!_isSensorsConnected(firstSensorConnected, secondSensorConnected)}}" raised class="blue" on-tap="endSensorsConnection">
+        Terminer la connexion des capteurs
+      </paper-button>
+    </div>
 
   </template>
 
@@ -48,8 +70,15 @@
       properties: {
         sensorService: {
           type: String,
-          value: "",
+          value: 'battery_service',
           readOnly: true,
+          reflectToAttribute: true,
+        },
+        sensorCharacteristic: {
+          type: String,
+          value: 'battery_level',
+          readOnly: true,
+          reflectToAttribute: true,
         },
         connected: {
           type: Boolean,
@@ -64,6 +93,10 @@
             return isSensorsAlreadyAvailable;
           },
         },
+      },
+       
+      _batteryValueChanged: function(value) {
+        this._log = value.getUint8(0);
       },
 
       _connectionChanged: function(isConnected) {
