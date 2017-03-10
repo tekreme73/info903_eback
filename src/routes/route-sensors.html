@@ -40,14 +40,14 @@
         characteristic-name="[[sensorCharacteristic]]"
         characteristic-value-changed="{{_batteryValueChanged}}"
         device="{{firstSensor}}"
-        is-connected="{{firstSensorConnected}}">
+        is-notified="{{firstSensorConnected}}">
       </bluetooth-device-connector>
       <bluetooth-device-connector
         service-name="[[sensorService]]"
         characteristic-name="[[sensorCharacteristic]]"
         characteristic-value-changed="{{_batteryValueChanged}}"
         device="{{secondSensor}}"
-        is-connected="{{secondSensorConnected}}">
+        is-notified="{{secondSensorConnected}}">
       </bluetooth-device-connector>
     </div>
 
