@@ -116,6 +116,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <iron-icon icon="home"></iron-icon>
             Accueil
           </a>
+          <a name="settings" href="/app/sensors" hidden="[[!isAuth]]">
+            <iron-icon icon="important-devices"></iron-icon>
+            Capteurs
+          </a>
           <a name="settings" href="/app/settings" hidden="[[!_isSettingsAccessible(page, isAuth, isSensorsAvailable)]]">
             <iron-icon icon="settings"></iron-icon>
             Paramètres
@@ -151,7 +155,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             fallback-selection="undefined"
             role="main">
           <route-login name="login" title="Page de connexion" is-auth="{{isAuth}}"></route-login>
-          <route-sensors name="sensors" title="Connecter les capteurs" connected="{{isSensorsAvailable}}"></route-sensors>
+          <route-sensors name="sensors" title="Capteurs dorsaux" connected="{{isSensorsAvailable}}"></route-sensors>
           <route-home name="home" title="" selected="1" bottom-tab-selected="{{bottomTabSelected}}"></route-home>
           <route-settings name="settings" title="Paramètres"></route-settings>
           <route-undefined name="undefined" title="Page non trouvée"></route-undefined>

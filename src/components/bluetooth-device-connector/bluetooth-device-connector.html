@@ -180,7 +180,6 @@ THE SOFTWARE.
         this._startNotifications = this._startNotifications.bind(this);
         this._stopNotifications = this._stopNotifications.bind(this);
         this._handleError = this._handleError.bind(this);
-        this._onCharacteristicValueChanged = this._onCharacteristicValueChanged.bind(this);
       },
 
       //OBSERVERS
@@ -191,7 +190,9 @@ THE SOFTWARE.
         if( isPaired ) {
           this._log = 'Paired Bluetooth Device!';
         } else {
-          this._disconnectServices();
+          if( this.isConnected ) {
+            this._disconnectServices();
+          }
           this._log = 'Unpaired Bluetooth Device!';
         }
       },
@@ -199,7 +200,9 @@ THE SOFTWARE.
         if( isConnected ) {
           this._log = 'Connected To Services!';
         } else {
-          this._stopNotifications();
+          if( this.isNotified ) {
+            this._stopNotifications();
+          }
           this._log = 'Disconnected To Services!';
         }
       },
